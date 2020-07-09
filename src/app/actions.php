@@ -1,4 +1,6 @@
 <?php
+
+    //Constantes uteis
     define("INDEX_NOME", 0);
     define("INDEX_IDADE", 1);
     define("INDEX_SEXO", 2);
@@ -9,6 +11,21 @@
     define("INDEX_BIMESTRE", 7);
     define("ALL_STUDENTS", 31);
 
+
+    //Funções uteis
+
+    function retornaNotasPortugues($element){
+        return $element[0][INDEX_PORTUGUES];
+    }
+
+    function retornaNotasMatematica($element){
+        return $element[0][INDEX_MATEMATICA];
+    }
+
+    function retornaNotasGeografia($element){
+        return $element[0][INDEX_GEOGRAFIA];
+    }
+
     function convertStringToArray($str){
         $newArray = explode(";", $str);
         return $newArray;
@@ -17,8 +34,10 @@
         $newLine = array_map('convertStringToArray', $line);
         return $newLine;
     }
- 
-    //Aluno com melhor média de notas em geral (todos os bimestres)
+
+
+    //Questões
+
     function calculaMaiorMediaEmGeral($data){
 
         $medias = [];
@@ -61,18 +80,6 @@
             array_push( $nomesMenorNota, $data[$indexesMenorNota[$j]][0][0] );
         }
         return $nomesMenorNota;
-    }
-
-    function retornaNotasPortugues($element){
-        return $element[0][INDEX_PORTUGUES];
-    }
-
-    function retornaNotasMatematica($element){
-        return $element[0][INDEX_MATEMATICA];
-    }
-
-    function retornaNotasGeografia($element){
-        return $element[0][INDEX_GEOGRAFIA];
     }
     
     function retornaAlunosDestaquePorDisciplina($data){
@@ -201,7 +208,6 @@
 
         $pioraMaisSignificativa = min($variacaoEmPorcentagem);
         $indexesDasPioras = array_keys($variacaoEmPorcentagem, $pioraMaisSignificativa);
-        print_r($indexesDasPioras);
         $alunosComMaioresPioras = [];
 
         for($j = 0; $j < count($indexesDasPioras) ; $j++){
@@ -418,68 +424,21 @@
             $melhoresBimestresPorDisciplina["geografia"] = 2;
         }
 
-        echo "thunder";
-        print_r($melhoresBimestresPorDisciplina);
         return $melhoresBimestresPorDisciplina;
     }
 
     $tmpFile = $_FILES['file']['tmp_name'];
-    $csvAsArray = array_map('str_getcsv', file($tmpFile));
-    $csvAsArrayParsed = array_map('parseCSVArray', $csvAsArray);
-    array_shift($csvAsArrayParsed);
+    $csvArray = array_map('str_getcsv', file($tmpFile));
+    $csvArrayParsed = array_map('parseCSVArray', $csvArray);
+    array_shift($csvArrayParsed);
 
-    $melhoresMediasEmGeral = calculaMaiorMediaEmGeral($csvAsArrayParsed);
-    $pioresMediasEmGeral = calculaMenorMediaEmGeral($csvAsArrayParsed);
-    $alunosDestaqueDisciplina = retornaAlunosDestaquePorDisciplina($csvAsArrayParsed);
-    print_r($alunosDestaqueDisciplina);
+    $melhoresMediasEmGeral = calculaMaiorMediaEmGeral($csvArrayParsed);
+    $pioresMediasEmGeral = calculaMenorMediaEmGeral($csvArrayParsed);
+    $alunosDestaqueDisciplina = retornaAlunosDestaquePorDisciplina($csvArrayParsed);
+    $alunosMaioresMelhoras = retornaAlunoComMaiorPorcentagemDeMelhora($csvArrayParsed);
+    $alunosMaioresPioras = retornaAlunoComMaiorPorcentagemDePiora($csvArrayParsed);
+    $materiasMaiorNotaEmGeral = retornaMateriasComMaioresNotasNoGeral($csvArrayParsed);
+    $materiasMenorNotaEmGeral = retornaMateriasComMenoresNotasNoGeral($csvArrayParsed);
+    $turmasComMelhoresNotasPorDisciplina = retornaTurmasComMelhoresNotasPorDisciplina($csvArrayParsed);
+    $bimestreComMelhoresNotasPorDisciplina = retornaBimestreComMelhoresNotasParaCadaDisciplina($csvArrayParsed);
 ?> 
-
-<div>
-
-    <p>Quais os alunos com a melhores média de notas em geral? (todos os bimestres)</p>
-    <?php
-        foreach ($melhoresMediasEmGeral as $aluno) {
-            echo "<h4>\n";
-            echo $aluno;
-            echo "</h4>";
-        }
-    ?>
-
-    <p>Qual o aluno com a pior média de notas em geral (todos os bimestres).</p>
-        <?php
-            foreach ($pioresMediasEmGeral as $aluno) {
-                echo "<h4>\n";
-                echo $aluno;
-                echo "</h4>";
-            }
-        ?>
-    <p>Quais os alunos destaque (melhores notas) de cada disciplina em todos os bimestres.</p>
-        <?php
-            echo "<h4> Em português\n";
-            echo $alunosDestaqueDisciplina["portugues"];
-            echo "</h4>";
-            echo "<h4> Em Matemática\n";
-            echo $$alunosDestaqueDisciplina["matematica"];
-            echo "</h4>";
-            echo "<h4> Em Geografia\n";
-            echo $$alunosDestaqueDisciplina["geografia"];
-            echo "</h4>";
-        
-        ?>
-    <p>Qual aluno possui a melhora mais significativa no último bimestre com relação ao primeiro
-bimestre.</p>
-
-    <p>Qual aluno possui a piora mais significativa no último bimestre com relação ao primeiro
-bimestre.</p>
-
-    <p>Qual a matéria cujas notas foram maiores em geral (todos os bimestres).</p>
-
-    <p>Qual a matéria cujas notas foram menores em geral (todos os bimestres).</p>
-
-    <p>Qual turma tem as melhores notas em cada disciplina: Português, Matemática e Geografia
-em geral (todos os bimestres).</p>
-
-    <p>Em qual bimestre houveram as melhores notas em cada disciplina: Português,
-Matemática e Geografia em geral (todos os bimestres). </p>
-
-</div>
