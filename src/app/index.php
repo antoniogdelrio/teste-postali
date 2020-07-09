@@ -10,6 +10,7 @@
     <h1>Teste Postali</h1>
     <div class="myForm">
         <form action="results.php" method="post" enctype="multipart/form-data">
+            <label>Importe seu arquivo CSV</label>
             <input type="file" name="file" id="file" />
             <input type="submit" name="submit" />
         </form>

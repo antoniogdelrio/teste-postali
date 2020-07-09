@@ -16,6 +16,10 @@ body {
     align-items: center;
 }
 
+label {
+    margin-bottom: 16px;
+}
+
 .myForm {
     animation-name: transition;
     animation-duration: 1s;
